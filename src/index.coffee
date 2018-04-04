@@ -74,6 +74,7 @@ init = (el, opts = {}) ->
 
 
 initWithoutGUI = (el, opts) ->
+  _document = el.getRootNode() || document
   originalClassName = el.className
   if [' ', ' '].join(el.className).indexOf(' literally ') == -1
     el.className = el.className + ' literally'
@@ -84,7 +85,7 @@ initWithoutGUI = (el, opts) ->
   if ('imageSize' of opts && 'height' of opts.imageSize)
     el.style.height = opts.imageSize.height + 'px'
 
-  drawingViewElement = document.createElement('div')
+  drawingViewElement = _document.createElement('div')
   drawingViewElement.className = 'lc-drawing'
   el.appendChild(drawingViewElement)
 

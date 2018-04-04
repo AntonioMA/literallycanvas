@@ -16,13 +16,17 @@ module.exports = class LiterallyCanvas
   constructor: (arg1, arg2) ->
     opts = null
     containerEl = null
-    if arg1 instanceof HTMLElement
+    # if arg1 instanceof HTMLElement => Does NOT work for elements for other iframes/windows
+    # so duck typing for the win
+    if ((arg1.nodeType > 0) && (typeof arg1.nodeName == 'string'))
       containerEl = arg1
       opts = arg2
     else
       opts = arg1
 
     @opts = opts or {}
+
+    _document = containerEl && containerEl.getRootNode() || document;
 
     @config =
       zoomMin: opts.zoomMin or 0.2
@@ -37,13 +41,13 @@ module.exports = class LiterallyCanvas
     @watermarkImage = opts.watermarkImage
     @watermarkScale = opts.watermarkScale or 1
 
-    @backgroundCanvas = document.createElement('canvas')
+    @backgroundCanvas = _document.createElement('canvas')
     @backgroundCtx = @backgroundCanvas.getContext('2d')
 
-    @canvas = document.createElement('canvas')
+    @canvas = _document.createElement('canvas')
     @canvas.style['background-color'] = 'transparent'
 
-    @buffer = document.createElement('canvas')
+    @buffer = _document.createElement('canvas')
     @buffer.style['background-color'] = 'transparent'
     @ctx = @canvas.getContext('2d')
     @bufferCtx = @buffer.getContext('2d')

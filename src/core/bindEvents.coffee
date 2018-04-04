@@ -21,6 +21,7 @@ buttonIsDown = (e) ->
 
 
 module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
+  _document = canvas.getRootNode() || document;
   unsubs = []
 
   mouseMoveListener = (e) =>
@@ -33,8 +34,8 @@ module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
     canvas.onselectstart = -> true # enable selection while dragging
     p = position(canvas, e)
     lc.pointerUp(p.left, p.top)
-    document.removeEventListener 'mousemove', mouseMoveListener
-    document.removeEventListener 'mouseup', mouseUpListener
+    _document.removeEventListener 'mousemove', mouseMoveListener
+    _document.removeEventListener 'mouseup', mouseUpListener
 
     canvas.addEventListener 'mousemove', mouseMoveListener
 
@@ -48,8 +49,8 @@ module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
     lc.pointerDown(p.left, p.top)
 
     canvas.removeEventListener 'mousemove', mouseMoveListener
-    document.addEventListener 'mousemove', mouseMoveListener
-    document.addEventListener 'mouseup', mouseUpListener
+    _document.addEventListener 'mousemove', mouseMoveListener
+    _document.addEventListener 'mouseup', mouseUpListener
 
 
   touchMoveListener = (e) ->
@@ -59,18 +60,18 @@ module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
   touchEndListener = (e) ->
     e.preventDefault()
     lc.pointerUp(coordsForTouchEvent(canvas, e)...)
-    document.removeEventListener 'touchmove', touchMoveListener
-    document.removeEventListener 'touchend', touchEndListener
-    document.removeEventListener 'touchcancel', touchEndListener
+    _document.removeEventListener 'touchmove', touchMoveListener
+    _document.removeEventListener 'touchend', touchEndListener
+    _document.removeEventListener 'touchcancel', touchEndListener
 
   canvas.addEventListener 'touchstart', (e) ->
     return if e.target.tagName.toLowerCase() != 'canvas'
     e.preventDefault()
     if e.touches.length == 1
       lc.pointerDown(coordsForTouchEvent(canvas, e)...)
-      document.addEventListener 'touchmove', touchMoveListener
-      document.addEventListener 'touchend', touchEndListener
-      document.addEventListener 'touchcancel', touchEndListener
+      _document.addEventListener 'touchmove', touchMoveListener
+      _document.addEventListener 'touchend', touchEndListener
+      _document.addEventListener 'touchcancel', touchEndListener
     else
       lc.pointerMove(coordsForTouchEvent(canvas, e)...)
 
@@ -84,7 +85,7 @@ module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
         when 40 then lc.pan 0, 10
       lc.repaintAllLayers()
 
-    document.addEventListener 'keydown', listener
+    _document.addEventListener 'keydown', listener
     unsubs.push -> document.removeEventListener(listener)
 
   -> f() for f in unsubs
